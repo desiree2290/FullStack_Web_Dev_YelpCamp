@@ -1,0 +1,27 @@
+# macOS
+.DS_Store
+
+# Node
+node_modules/
+npm-debug.log
+yarn.lock
+pnpm-lock.yaml
+
+# Environment variables
+.env
+
+# Logs
+logs/
+*.log
+
+# Sessions
+sessions/
+
+# Temporary uploads
+uploads/
+
+# VS Code
+.vscode/
+
+# MongoDB data
+data/
