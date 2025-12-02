@@ -11,6 +11,7 @@ const ejsMate = require('ejs-mate');
 const ExpressError = require('./utils/ExpressError')
 const methodOverride = require('method-override');
 const session = require('express-session');
+const MongoStore = require('connect-mongo');
 const flash = require('connect-flash');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
@@ -23,7 +24,12 @@ const campgroundRoutes = require('./routes/campgrounds');
 const reviewRoutes = require('./routes/reviews');
 
 // 'mongodb://localhost:27017/yelp-camp-maptiler'
-const dbUrl = process.env.DB_URL
+const dbUrl = 'mongodb://localhost:27017/yelp-camp';
+
+// process.env.DB_URL || 
+console.log('Using DB URL:', dbUrl);
+
+
 mongoose.connect(dbUrl, {
     useNewUrlParser: true,
     useCreateIndex: true,
@@ -48,7 +54,20 @@ app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname,'public')))
 app.use(mongoSanitize())
 
+const store = MongoStore.create({
+    mongoUrl: dbUrl,
+    touchAfter: 24 * 60 * 60,
+    crypto: {
+        secret: 'thisshouldbeabettersecret!'
+    }
+});
+
+store.on("error", function (e) {
+    console.log("SESSION STORE ERROR", e)
+})
+
 const sessionConfig = {
+    store,
     name: 'session',
     secret: 'thisshouldbeabettersecret',
     resave: false,
